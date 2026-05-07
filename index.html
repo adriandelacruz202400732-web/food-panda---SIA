@@ -1,23 +1,170 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <title>Home</title>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
-    <!--
-      Need a visual blank slate?
-      Remove all code in `styles.css`!
-    -->
-    <link rel="stylesheet" href="styles.css" />
-    <script type="module" src="script.js"></script>
-  </head>
-  <body>
-    <nav>
-      <a href="/" aria-current="page">Home</a>
-      <a href="/page2.html">Other page</a>
-    </nav>
-    <main>
-      <h1>Home page</h1>
-    </main>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FoodPanda — Order Portal</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo">
+        <span class="logo-icon">🐼</span>
+        <div class="logo-text">
+          <span class="logo-brand">FoodPanda</span>
+          <span class="logo-tagline">Order Portal</span>
+        </div>
+      </div>
+      <nav class="nav-tabs">
+        <button class="nav-btn active" data-tab="menu">
+          <i class="fa fa-utensils"></i> Menu
+        </button>
+        <button class="nav-btn" data-tab="add">
+          <i class="fa fa-plus-circle"></i> Add Food
+        </button>
+        <button class="nav-btn" data-tab="receipt">
+          <i class="fa fa-receipt"></i> Receipt
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- TOAST NOTIFICATION -->
+  <div class="toast" id="toast">
+    <i class="fa fa-check-circle"></i>
+    <span id="toast-msg">Done!</span>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+
+    <!-- ======================== MENU TAB ======================== -->
+    <section class="tab-section active" id="tab-menu">
+      <div class="section-header">
+        <div>
+          <h1 class="section-title">Today's Menu</h1>
+          <p class="section-sub">Browse and order from available items</p>
+        </div>
+        <button class="btn btn-ghost" id="refresh-btn">
+          <i class="fa fa-rotate-right"></i> Refresh
+        </button>
+      </div>
+
+      <!-- FILTER BAR -->
+      <div class="filter-bar">
+        <input type="text" class="search-input" id="search-input" placeholder="Search food or restaurant…" />
+        <div class="category-chips">
+          <button class="chip active" data-cat="all">All</button>
+          <button class="chip" data-cat="fast food">Fast Food</button>
+          <button class="chip" data-cat="drinks">Drinks</button>
+          <button class="chip" data-cat="dessert">Dessert</button>
+          <button class="chip" data-cat="meals">Meals</button>
+        </div>
+      </div>
+
+      <!-- FOOD GRID -->
+      <div class="food-grid" id="food-grid">
+        <div class="loading-state">
+          <div class="spinner"></div>
+          <p>Fetching menu…</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================== ADD FOOD TAB ======================== -->
+    <section class="tab-section" id="tab-add">
+      <div class="section-header">
+        <div>
+          <h1 class="section-title">Add New Item</h1>
+          <p class="section-sub">Expand the menu with a new food entry</p>
+        </div>
+      </div>
+
+      <div class="form-wrapper">
+        <div class="form-card">
+          <form id="add-food-form" novalidate>
+            <div class="form-group">
+              <label for="food-name">Food Name</label>
+              <div class="input-wrap">
+                <i class="fa fa-burger"></i>
+                <input type="text" id="food-name" placeholder="e.g. Chickenjoy" required />
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="food-restaurant">Restaurant</label>
+              <div class="input-wrap">
+                <i class="fa fa-store"></i>
+                <input type="text" id="food-restaurant" placeholder="e.g. Jollibee" required />
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="food-price">Price (₱)</label>
+              <div class="input-wrap">
+                <i class="fa fa-peso-sign"></i>
+                <input type="number" id="food-price" placeholder="e.g. 120" min="1" required />
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-full" id="add-btn">
+              <i class="fa fa-plus"></i> Add to Menu
+            </button>
+          </form>
+        </div>
+
+        <div class="form-preview" id="form-preview">
+          <p class="preview-label">Live Preview</p>
+          <div class="preview-card">
+            <div class="preview-emoji">🍽️</div>
+            <div class="preview-name" id="prev-name">Food Name</div>
+            <div class="preview-rest" id="prev-rest"><i class="fa fa-store"></i> Restaurant</div>
+            <div class="preview-price" id="prev-price">₱ —</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================== RECEIPT TAB ======================== -->
+    <section class="tab-section" id="tab-receipt">
+      <div class="section-header">
+        <div>
+          <h1 class="section-title">Latest Receipt</h1>
+          <p class="section-sub">Your most recent order summary</p>
+        </div>
+        <button class="btn btn-ghost" id="fetch-receipt-btn">
+          <i class="fa fa-rotate-right"></i> Fetch Receipt
+        </button>
+      </div>
+
+      <div class="receipt-wrapper" id="receipt-wrapper">
+        <div class="empty-state">
+          <span class="empty-icon">🧾</span>
+          <p>No receipt yet. Place an order first!</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ORDER CONFIRM MODAL -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal">
+      <div class="modal-icon">🛒</div>
+      <h2 class="modal-title">Confirm Order</h2>
+      <p class="modal-sub" id="modal-sub">Are you sure you want to order this item?</p>
+      <div class="modal-food" id="modal-food"></div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" id="modal-cancel">Cancel</button>
+        <button class="btn btn-primary" id="modal-confirm">
+          <i class="fa fa-check"></i> Place Order
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
 </html>
