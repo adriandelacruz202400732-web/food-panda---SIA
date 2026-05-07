@@ -94,7 +94,7 @@ async function fetchFoods() {
     allFoods = Array.isArray(data) ? data : [];
     renderFoods();
   } catch (err) {
-    foodGrid.innerHTML = `<div class="empty-state"><span class="empty-icon">⚠️</span><p>Failed to load menu. Check your connection.</p></div>`;
+    foodGrid.innerHTML = `<div class="empty-state"><span class="empty-icon">⚠️</span><p>Failed to load menu. The server may be waking up — try refreshing in a moment.</p></div>`;
   }
 }
 
@@ -125,7 +125,7 @@ function renderFoods() {
         <div class="food-card-price">₱${Number(f.price).toLocaleString()}</div>
       </div>
       <div class="food-card-actions">
-        <button class="btn btn-order order-btn"
+        <button type="button" class="btn-order order-btn"
           data-id="${f.id}"
           data-name="${escHtml(f.name)}"
           data-restaurant="${escHtml(f.restaurant)}"
@@ -133,14 +133,14 @@ function renderFoods() {
           <i class="fa fa-bag-shopping"></i> Order Now
         </button>
         <div class="food-card-secondary-actions">
-          <button class="btn btn-edit edit-btn"
+          <button type="button" class="btn btn-edit edit-btn"
             data-id="${f.id}"
             data-name="${escHtml(f.name)}"
             data-restaurant="${escHtml(f.restaurant)}"
             data-price="${f.price}">
             <i class="fa fa-pen"></i> Edit
           </button>
-          <button class="btn btn-danger delete-btn" data-id="${f.id}">
+          <button type="button" class="btn btn-danger delete-btn" data-id="${f.id}">
             <i class="fa fa-trash"></i> Remove
           </button>
         </div>
@@ -300,7 +300,6 @@ editForm.addEventListener('submit', async e => {
     const data = await res.json();
 
     if (res.ok) {
-      // Update local state
       const idx = allFoods.findIndex(f => String(f.id) === String(id));
       if (idx !== -1) allFoods[idx] = { ...allFoods[idx], name, restaurant, price };
       renderFoods();
@@ -328,7 +327,6 @@ function closeUpdateOrderModal() {
 
 // "Update Order" button in Receipt tab
 document.getElementById('update-order-btn').addEventListener('click', async () => {
-  // Fetch latest receipt to know current order
   try {
     const res  = await fetch(`${API}/api/receipt`);
     const data = await res.json();
@@ -347,7 +345,6 @@ document.getElementById('update-order-btn').addEventListener('click', async () =
       </div>
     `;
 
-    // Populate food selector
     const select = document.getElementById('update-order-select');
     select.innerHTML = `<option value="">— Select a new item —</option>` +
       allFoods.map(f => `<option value="${f.id}">${escHtml(f.name)} (₱${Number(f.price).toLocaleString()})</option>`).join('');
@@ -359,7 +356,7 @@ document.getElementById('update-order-btn').addEventListener('click', async () =
 });
 
 updateOrderConfirm.addEventListener('click', async () => {
-  const select  = document.getElementById('update-order-select');
+  const select    = document.getElementById('update-order-select');
   const newFoodId = select.value;
 
   if (!newFoodId) {
@@ -381,7 +378,7 @@ updateOrderConfirm.addEventListener('click', async () => {
     if (res.ok) {
       closeUpdateOrderModal();
       showToast(`🔄 Order updated to "${data.order?.item || 'new item'}"!`);
-      fetchReceipt(); // Refresh receipt view
+      fetchReceipt();
     } else {
       showToast(data.message || 'Update failed.', true);
     }

@@ -246,8 +246,47 @@ body {
   width: 100%;
   justify-content: center;
   box-shadow: 0 4px 14px #ff4d6d30;
+  cursor: pointer !important;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  transition: all var(--trans);
+  position: relative;
+  z-index: 2;
+  pointer-events: all !important;
 }
 .btn-order:hover { opacity: .88; transform: translateY(-1px); box-shadow: 0 6px 20px #ff4d6d40; }
+.btn-order:active { transform: translateY(0) scale(.97); opacity: 1; }
+.btn-order:disabled { opacity: .5; cursor: not-allowed !important; transform: none; }
+
+.btn-danger {
+  background: transparent;
+  color: var(--danger);
+  border: 1px solid #ff4d6d33;
+  font-size: .78rem;
+  padding: .4rem .9rem;
+  cursor: pointer !important;
+  position: relative;
+  z-index: 2;
+  pointer-events: all !important;
+}
+.btn-danger:hover { background: var(--danger); color: #fff; }
+.btn-danger:disabled { opacity: .5; cursor: not-allowed !important; }
+
+.btn-edit {
+  background: transparent;
+  color: #6eb5ff;
+  border: 1px solid #6eb5ff33;
+  font-size: .78rem;
+  padding: .4rem .9rem;
+  cursor: pointer !important;
+  position: relative;
+  z-index: 2;
+  pointer-events: all !important;
+}
+.btn-edit:hover { background: #6eb5ff; color: #0a1a2e; }
 
 .btn-full { width: 100%; justify-content: center; padding: .85rem; font-size: .9rem; }
 
@@ -325,6 +364,8 @@ body {
   background: linear-gradient(135deg, var(--accent-soft) 0%, transparent 60%);
   opacity: 0;
   transition: opacity var(--trans);
+  pointer-events: none;
+  z-index: 0;
 }
 
 .food-card:hover {
@@ -387,6 +428,8 @@ body {
   display: flex;
   flex-direction: column;
   gap: .45rem;
+  position: relative;
+  z-index: 2;
 }
 
 /* Secondary actions row: Edit + Remove side by side */
