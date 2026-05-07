@@ -47,6 +47,23 @@ const modalConfirm = document.getElementById('modal-confirm');
 const toast        = document.getElementById('toast');
 const toastMsg     = document.getElementById('toast-msg');
 
+// Edit modal refs
+const editModalOverlay = document.getElementById('edit-modal-overlay');
+const editForm         = document.getElementById('edit-food-form');
+const editFoodId       = document.getElementById('edit-food-id');
+const editFoodName     = document.getElementById('edit-food-name');
+const editFoodRest     = document.getElementById('edit-food-restaurant');
+const editFoodPrice    = document.getElementById('edit-food-price');
+const editCancel       = document.getElementById('edit-modal-cancel');
+const editSubmit       = document.getElementById('edit-submit-btn');
+
+// Update order modal refs
+const updateOrderOverlay  = document.getElementById('update-order-overlay');
+const updateOrderFoodId   = document.getElementById('update-order-food-id');
+const updateOrderCancel   = document.getElementById('update-order-cancel');
+const updateOrderConfirm  = document.getElementById('update-order-confirm');
+const updateOrderCurrent  = document.getElementById('update-order-current');
+
 // ===================== TABS =====================
 document.querySelectorAll('.nav-btn').forEach(btn => {
   btn.addEventListener('click', () => {
@@ -108,20 +125,28 @@ function renderFoods() {
         <div class="food-card-price">₱${Number(f.price).toLocaleString()}</div>
       </div>
       <div class="food-card-actions">
-        <button class="btn btn-order order-btn" data-id="${f.id}" data-name="${escHtml(f.name)}" data-rest="${escHtml(f.restaurant)}" data-price="${f.price}">
+        <button class="btn btn-order order-btn"
+          data-id="${f.id}"
+          data-name="${escHtml(f.name)}"
+          data-restaurant="${escHtml(f.restaurant)}"
+          data-price="${f.price}">
           <i class="fa fa-bag-shopping"></i> Order Now
         </button>
-        <button class="btn btn-danger delete-btn" data-id="${f.id}">
-          <i class="fa fa-trash"></i> Remove
-        </button>
+        <div class="food-card-secondary-actions">
+          <button class="btn btn-edit edit-btn"
+            data-id="${f.id}"
+            data-name="${escHtml(f.name)}"
+            data-restaurant="${escHtml(f.restaurant)}"
+            data-price="${f.price}">
+            <i class="fa fa-pen"></i> Edit
+          </button>
+          <button class="btn btn-danger delete-btn" data-id="${f.id}">
+            <i class="fa fa-trash"></i> Remove
+          </button>
+        </div>
       </div>
     </div>
   `).join('');
-
-  // Bind order buttons
-  document.querySelectorAll('.order-btn').forEach(btn => btn.addEventListener('click', openOrderModal));
-  // Bind delete buttons
-  document.querySelectorAll('.delete-btn').forEach(btn => btn.addEventListener('click', deleteFood));
 }
 
 function matchCategory(food, cat) {
@@ -149,45 +174,64 @@ document.querySelectorAll('.chip').forEach(chip => {
 searchInput.addEventListener('input', renderFoods);
 refreshBtn.addEventListener('click', fetchFoods);
 
-// ===================== DELETE FOOD =====================
-async function deleteFood(e) {
-  const btn = e.currentTarget;
-  const id  = btn.dataset.id;
-  btn.disabled = true;
-  btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i>';
+// ===================== EVENT DELEGATION (Order + Delete + Edit) =====================
+foodGrid.addEventListener('click', async (e) => {
 
-  try {
-    const res  = await fetch(`${API}/api/foods/${id}`, { method: 'DELETE' });
-    const data = await res.json();
-
-    if (res.ok) {
-      allFoods = allFoods.filter(f => String(f.id) !== String(id));
-      renderFoods();
-      showToast('Food item removed from menu.');
-    } else {
-      showToast(data.message || 'Delete failed.', true);
-      btn.disabled = false;
-      btn.innerHTML = '<i class="fa fa-trash"></i> Remove';
-    }
-  } catch {
-    showToast('Network error. Try again.', true);
-    btn.disabled = false;
-    btn.innerHTML = '<i class="fa fa-trash"></i> Remove';
+  // --- ORDER BUTTON ---
+  const orderBtn = e.target.closest('.order-btn');
+  if (orderBtn) {
+    pendingOrderId = orderBtn.dataset.id;
+    modalFood.innerHTML = `
+      <strong>${orderBtn.dataset.name}</strong>
+      <small style="display:block;color:var(--text-muted);margin:.2rem 0">${orderBtn.dataset.restaurant}</small>
+      <span class="mf-price">₱${Number(orderBtn.dataset.price).toLocaleString()}</span>
+    `;
+    modalOverlay.classList.add('open');
+    return;
   }
-}
+
+  // --- EDIT BUTTON ---
+  const editBtn = e.target.closest('.edit-btn');
+  if (editBtn) {
+    editFoodId.value    = editBtn.dataset.id;
+    editFoodName.value  = editBtn.dataset.name;
+    editFoodRest.value  = editBtn.dataset.restaurant;
+    editFoodPrice.value = editBtn.dataset.price;
+    editModalOverlay.classList.add('open');
+    return;
+  }
+
+  // --- DELETE BUTTON ---
+  const deleteBtn = e.target.closest('.delete-btn');
+  if (deleteBtn) {
+    const id = deleteBtn.dataset.id;
+    if (deleteBtn.disabled) return;
+    deleteBtn.disabled = true;
+    deleteBtn.innerHTML = '<i class="fa fa-spinner fa-spin"></i>';
+
+    try {
+      const res  = await fetch(`${API}/api/foods/${id}`, { method: 'DELETE' });
+      const data = await res.json();
+
+      if (res.ok) {
+        allFoods = allFoods.filter(f => String(f.id) !== String(id));
+        renderFoods();
+        showToast('Food item removed from menu.');
+      } else {
+        showToast(data.message || 'Delete failed.', true);
+        deleteBtn.disabled = false;
+        deleteBtn.innerHTML = '<i class="fa fa-trash"></i> Remove';
+      }
+    } catch {
+      showToast('Network error. Try again.', true);
+      deleteBtn.disabled = false;
+      deleteBtn.innerHTML = '<i class="fa fa-trash"></i> Remove';
+    }
+  }
+
+});
 
 // ===================== ORDER MODAL =====================
-function openOrderModal(e) {
-  const btn  = e.currentTarget;
-  pendingOrderId = btn.dataset.id;
-  modalFood.innerHTML = `
-    <strong>${btn.dataset.name}</strong>
-    <small style="display:block;color:var(--text-muted);margin:.2rem 0">${btn.dataset.rest}</small>
-    <span class="mf-price">₱${Number(btn.dataset.price).toLocaleString()}</span>
-  `;
-  modalOverlay.classList.add('open');
-}
-
 modalCancel.addEventListener('click', closeModal);
 modalOverlay.addEventListener('click', e => { if (e.target === modalOverlay) closeModal(); });
 
@@ -219,6 +263,133 @@ modalConfirm.addEventListener('click', async () => {
   } finally {
     modalConfirm.disabled = false;
     modalConfirm.innerHTML = '<i class="fa fa-check"></i> Place Order';
+  }
+});
+
+// ===================== EDIT FOOD MODAL =====================
+editCancel.addEventListener('click', closeEditModal);
+editModalOverlay.addEventListener('click', e => { if (e.target === editModalOverlay) closeEditModal(); });
+
+function closeEditModal() {
+  editModalOverlay.classList.remove('open');
+  editForm.reset();
+}
+
+editForm.addEventListener('submit', async e => {
+  e.preventDefault();
+
+  const id         = editFoodId.value;
+  const name       = editFoodName.value.trim();
+  const restaurant = editFoodRest.value.trim();
+  const price      = parseFloat(editFoodPrice.value);
+
+  if (!name || !restaurant || isNaN(price) || price <= 0) {
+    showToast('Please fill in all fields correctly.', true);
+    return;
+  }
+
+  editSubmit.disabled = true;
+  editSubmit.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Saving…';
+
+  try {
+    const res = await fetch(`${API}/api/foods/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, restaurant, price }),
+    });
+    const data = await res.json();
+
+    if (res.ok) {
+      // Update local state
+      const idx = allFoods.findIndex(f => String(f.id) === String(id));
+      if (idx !== -1) allFoods[idx] = { ...allFoods[idx], name, restaurant, price };
+      renderFoods();
+      closeEditModal();
+      showToast(`✏️ "${name}" updated successfully!`);
+    } else {
+      showToast(data.message || 'Update failed.', true);
+    }
+  } catch {
+    showToast('Network error. Try again.', true);
+  } finally {
+    editSubmit.disabled = false;
+    editSubmit.innerHTML = '<i class="fa fa-check"></i> Save Changes';
+  }
+});
+
+// ===================== UPDATE ORDER MODAL =====================
+updateOrderCancel.addEventListener('click', closeUpdateOrderModal);
+updateOrderOverlay.addEventListener('click', e => { if (e.target === updateOrderOverlay) closeUpdateOrderModal(); });
+
+function closeUpdateOrderModal() {
+  updateOrderOverlay.classList.remove('open');
+  updateOrderFoodId.value = '';
+}
+
+// "Update Order" button in Receipt tab
+document.getElementById('update-order-btn').addEventListener('click', async () => {
+  // Fetch latest receipt to know current order
+  try {
+    const res  = await fetch(`${API}/api/receipt`);
+    const data = await res.json();
+
+    if (data.message || !data.id) {
+      showToast('No existing order to update.', true);
+      return;
+    }
+
+    updateOrderFoodId.value = '';
+    updateOrderCurrent.innerHTML = `
+      <div class="update-order-info">
+        <span class="update-label">Current order</span>
+        <strong>${escHtml(data.item)}</strong>
+        <small>${escHtml(data.restaurant)} &mdash; ₱${Number(data.price).toLocaleString()}</small>
+      </div>
+    `;
+
+    // Populate food selector
+    const select = document.getElementById('update-order-select');
+    select.innerHTML = `<option value="">— Select a new item —</option>` +
+      allFoods.map(f => `<option value="${f.id}">${escHtml(f.name)} (₱${Number(f.price).toLocaleString()})</option>`).join('');
+
+    updateOrderOverlay.classList.add('open');
+  } catch {
+    showToast('Could not fetch receipt data.', true);
+  }
+});
+
+updateOrderConfirm.addEventListener('click', async () => {
+  const select  = document.getElementById('update-order-select');
+  const newFoodId = select.value;
+
+  if (!newFoodId) {
+    showToast('Please select a new item.', true);
+    return;
+  }
+
+  updateOrderConfirm.disabled = true;
+  updateOrderConfirm.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Updating…';
+
+  try {
+    const res  = await fetch(`${API}/api/receipt`, {
+      method:  'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ foodId: newFoodId }),
+    });
+    const data = await res.json();
+
+    if (res.ok) {
+      closeUpdateOrderModal();
+      showToast(`🔄 Order updated to "${data.order?.item || 'new item'}"!`);
+      fetchReceipt(); // Refresh receipt view
+    } else {
+      showToast(data.message || 'Update failed.', true);
+    }
+  } catch {
+    showToast('Network error. Try again.', true);
+  } finally {
+    updateOrderConfirm.disabled = false;
+    updateOrderConfirm.innerHTML = '<i class="fa fa-rotate-right"></i> Update Order';
   }
 });
 

@@ -12,10 +12,12 @@
   --accent:     #ff4d6d;
   --accent-soft:#ff4d6d22;
   --accent-2:   #ffb347;
+  --accent-3:   #f0a500;
   --text:       #f0f0f5;
   --text-muted: #8888a0;
   --success:    #2fd87a;
   --danger:     #ff4d6d;
+  --warning:    #f0a500;
   --radius:     14px;
   --radius-sm:  8px;
   --shadow:     0 8px 32px #00000060;
@@ -167,6 +169,13 @@ body {
   margin-top: .2rem;
 }
 
+.receipt-header-actions {
+  display: flex;
+  gap: .5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
 /* ===================== BUTTONS ===================== */
 .btn {
   font-family: 'DM Sans', sans-serif;
@@ -206,6 +215,26 @@ body {
   padding: .4rem .9rem;
 }
 .btn-danger:hover { background: var(--danger); color: #fff; }
+
+/* ---- EDIT BUTTON ---- */
+.btn-edit {
+  background: transparent;
+  color: #6eb5ff;
+  border: 1px solid #6eb5ff33;
+  font-size: .78rem;
+  padding: .4rem .9rem;
+}
+.btn-edit:hover { background: #6eb5ff; color: #0a1a2e; }
+
+/* ---- WARNING BUTTON ---- */
+.btn-warning {
+  background: var(--warning);
+  color: #1a0f00;
+  font-weight: 600;
+  box-shadow: 0 4px 16px #f0a50030;
+}
+.btn-warning:hover { background: #d4910a; box-shadow: 0 6px 24px #f0a50050; transform: translateY(-1px); }
+.btn-warning:active { transform: translateY(0); }
 
 .btn-order {
   background: linear-gradient(135deg, var(--accent) 0%, #ff8a65 100%);
@@ -360,6 +389,17 @@ body {
   gap: .45rem;
 }
 
+/* Secondary actions row: Edit + Remove side by side */
+.food-card-secondary-actions {
+  display: flex;
+  gap: .4rem;
+}
+
+.food-card-secondary-actions .btn {
+  flex: 1;
+  justify-content: center;
+}
+
 /* ===================== LOADING / EMPTY STATES ===================== */
 .loading-state, .empty-state {
   grid-column: 1/-1;
@@ -426,9 +466,11 @@ body {
   color: var(--text-muted);
   font-size: .85rem;
   pointer-events: none;
+  z-index: 1;
 }
 
-.input-wrap input {
+.input-wrap input,
+.input-wrap select {
   width: 100%;
   background: var(--bg-elevated);
   border: 1px solid var(--border);
@@ -439,14 +481,21 @@ body {
   font-size: .9rem;
   outline: none;
   transition: border-color var(--trans), box-shadow var(--trans);
+  appearance: none;
 }
 
-.input-wrap input:focus {
+.input-wrap input:focus,
+.input-wrap select:focus {
   border-color: var(--accent);
   box-shadow: 0 0 0 3px #ff4d6d18;
 }
 
 .input-wrap input::placeholder { color: var(--text-muted); }
+
+/* ---- Select dropdown arrow ---- */
+.modal-select {
+  cursor: pointer;
+}
 
 /* ---- PREVIEW CARD ---- */
 .form-preview {
@@ -633,6 +682,36 @@ body {
 
 .modal-actions .btn { flex: 1; justify-content: center; padding: .75rem; }
 
+/* ---- Update order current info ---- */
+.update-order-info {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: .85rem 1rem;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: .2rem;
+}
+
+.update-order-info .update-label {
+  font-size: .7rem;
+  text-transform: uppercase;
+  letter-spacing: .8px;
+  color: var(--text-muted);
+}
+
+.update-order-info strong {
+  font-family: 'Syne', sans-serif;
+  font-size: .95rem;
+  color: var(--text);
+}
+
+.update-order-info small {
+  font-size: .78rem;
+  color: var(--text-muted);
+}
+
 /* ===================== TOAST ===================== */
 .toast {
   position: fixed;
@@ -670,4 +749,6 @@ body {
   .nav-btn span { display: none; }
   .section-title { font-size: 1.5rem; }
   .food-grid { grid-template-columns: 1fr; }
+  .receipt-header-actions { flex-direction: column; align-items: stretch; }
+  .receipt-header-actions .btn { justify-content: center; }
 }

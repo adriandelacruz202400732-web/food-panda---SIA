@@ -134,9 +134,14 @@
           <h1 class="section-title">Latest Receipt</h1>
           <p class="section-sub">Your most recent order summary</p>
         </div>
-        <button class="btn btn-ghost" id="fetch-receipt-btn">
-          <i class="fa fa-rotate-right"></i> Fetch Receipt
-        </button>
+        <div class="receipt-header-actions">
+          <button class="btn btn-warning" id="update-order-btn">
+            <i class="fa fa-rotate-right"></i> Update Order
+          </button>
+          <button class="btn btn-ghost" id="fetch-receipt-btn">
+            <i class="fa fa-rotate-right"></i> Fetch Receipt
+          </button>
+        </div>
       </div>
 
       <div class="receipt-wrapper" id="receipt-wrapper">
@@ -149,7 +154,7 @@
 
   </main>
 
-  <!-- ORDER CONFIRM MODAL -->
+  <!-- ===================== ORDER CONFIRM MODAL ===================== -->
   <div class="modal-overlay" id="modal-overlay">
     <div class="modal">
       <div class="modal-icon">🛒</div>
@@ -160,6 +165,71 @@
         <button class="btn btn-ghost" id="modal-cancel">Cancel</button>
         <button class="btn btn-primary" id="modal-confirm">
           <i class="fa fa-check"></i> Place Order
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== EDIT FOOD MODAL ===================== -->
+  <div class="modal-overlay" id="edit-modal-overlay">
+    <div class="modal">
+      <div class="modal-icon">✏️</div>
+      <h2 class="modal-title">Edit Food Item</h2>
+      <p class="modal-sub">Update the details for this menu item</p>
+      <form id="edit-food-form" novalidate>
+        <input type="hidden" id="edit-food-id" />
+        <div class="form-group" style="margin-bottom:1rem;">
+          <label for="edit-food-name" style="font-size:.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.8px;display:block;margin-bottom:.4rem;">Food Name</label>
+          <div class="input-wrap">
+            <i class="fa fa-burger"></i>
+            <input type="text" id="edit-food-name" placeholder="e.g. Chickenjoy" required />
+          </div>
+        </div>
+        <div class="form-group" style="margin-bottom:1rem;">
+          <label for="edit-food-restaurant" style="font-size:.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.8px;display:block;margin-bottom:.4rem;">Restaurant</label>
+          <div class="input-wrap">
+            <i class="fa fa-store"></i>
+            <input type="text" id="edit-food-restaurant" placeholder="e.g. Jollibee" required />
+          </div>
+        </div>
+        <div class="form-group" style="margin-bottom:1.5rem;">
+          <label for="edit-food-price" style="font-size:.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.8px;display:block;margin-bottom:.4rem;">Price (₱)</label>
+          <div class="input-wrap">
+            <i class="fa fa-peso-sign"></i>
+            <input type="number" id="edit-food-price" placeholder="e.g. 120" min="1" required />
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-ghost" id="edit-modal-cancel">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="edit-submit-btn">
+            <i class="fa fa-check"></i> Save Changes
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===================== UPDATE ORDER MODAL ===================== -->
+  <div class="modal-overlay" id="update-order-overlay">
+    <div class="modal">
+      <div class="modal-icon">🔄</div>
+      <h2 class="modal-title">Update Order</h2>
+      <p class="modal-sub">Replace your current order with a new item</p>
+      <input type="hidden" id="update-order-food-id" />
+      <div id="update-order-current" style="margin-bottom:1rem;"></div>
+      <div class="form-group" style="margin-bottom:1.5rem;">
+        <label for="update-order-select" style="font-size:.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.8px;display:block;margin-bottom:.4rem;">New Item</label>
+        <div class="input-wrap">
+          <i class="fa fa-utensils"></i>
+          <select id="update-order-select" class="modal-select">
+            <option value="">— Select a new item —</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" id="update-order-cancel">Cancel</button>
+        <button class="btn btn-warning" id="update-order-confirm">
+          <i class="fa fa-rotate-right"></i> Update Order
         </button>
       </div>
     </div>
