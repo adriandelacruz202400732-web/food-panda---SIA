@@ -1,11 +1,6 @@
-/* =============================================
-   FOODPANDA ORDER PORTAL — app.js
-   API Base: https://foodpanda-prefinal.onrender.com
-============================================= */
-
 const API = 'https://foodpanda-prefinal.onrender.com';
 
-// ---- Food emoji map ----
+
 const FOOD_EMOJIS = {
   burger: '🍔', pizza: '🍕', chicken: '🍗', chickenjoy: '🍗',
   fries: '🍟', rice: '🍚', spaghetti: '🍝', pasta: '🍝',
@@ -24,12 +19,12 @@ function getEmoji(name = '') {
   return '🍽️';
 }
 
-// ---- State ----
+
 let allFoods = [];
 let pendingOrderId = null;
 let activeCategory = 'all';
 
-// ===================== DOM REFS =====================
+
 const foodGrid     = document.getElementById('food-grid');
 const searchInput  = document.getElementById('search-input');
 const refreshBtn   = document.getElementById('refresh-btn');
@@ -47,7 +42,7 @@ const modalConfirm = document.getElementById('modal-confirm');
 const toast        = document.getElementById('toast');
 const toastMsg     = document.getElementById('toast-msg');
 
-// Edit modal refs
+
 const editModalOverlay = document.getElementById('edit-modal-overlay');
 const editForm         = document.getElementById('edit-food-form');
 const editFoodId       = document.getElementById('edit-food-id');
@@ -57,14 +52,13 @@ const editFoodPrice    = document.getElementById('edit-food-price');
 const editCancel       = document.getElementById('edit-modal-cancel');
 const editSubmit       = document.getElementById('edit-submit-btn');
 
-// Update order modal refs
 const updateOrderOverlay  = document.getElementById('update-order-overlay');
 const updateOrderFoodId   = document.getElementById('update-order-food-id');
 const updateOrderCancel   = document.getElementById('update-order-cancel');
 const updateOrderConfirm  = document.getElementById('update-order-confirm');
 const updateOrderCurrent  = document.getElementById('update-order-current');
 
-// ===================== TABS =====================
+
 document.querySelectorAll('.nav-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
@@ -75,7 +69,7 @@ document.querySelectorAll('.nav-btn').forEach(btn => {
   });
 });
 
-// ===================== TOAST =====================
+
 let toastTimer;
 function showToast(msg, isError = false) {
   clearTimeout(toastTimer);
@@ -85,7 +79,7 @@ function showToast(msg, isError = false) {
   toastTimer = setTimeout(() => toast.classList.remove('show'), 3200);
 }
 
-// ===================== FETCH FOODS =====================
+
 async function fetchFoods() {
   foodGrid.innerHTML = `<div class="loading-state"><div class="spinner"></div><p>Fetching menu…</p></div>`;
   try {
@@ -98,7 +92,7 @@ async function fetchFoods() {
   }
 }
 
-// ===================== RENDER FOODS =====================
+
 function renderFoods() {
   const query = searchInput.value.toLowerCase().trim();
 
@@ -160,7 +154,7 @@ function matchCategory(food, cat) {
   return (map[cat] || []).some(kw => name.includes(kw));
 }
 
-// ===================== CATEGORY CHIPS =====================
+
 document.querySelectorAll('.chip').forEach(chip => {
   chip.addEventListener('click', () => {
     document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
@@ -170,14 +164,14 @@ document.querySelectorAll('.chip').forEach(chip => {
   });
 });
 
-// ===================== SEARCH =====================
+
 searchInput.addEventListener('input', renderFoods);
 refreshBtn.addEventListener('click', fetchFoods);
 
-// ===================== EVENT DELEGATION (Order + Delete + Edit) =====================
+
 foodGrid.addEventListener('click', async (e) => {
 
-  // --- ORDER BUTTON ---
+
   const orderBtn = e.target.closest('.order-btn');
   if (orderBtn) {
     pendingOrderId = orderBtn.dataset.id;
@@ -190,7 +184,7 @@ foodGrid.addEventListener('click', async (e) => {
     return;
   }
 
-  // --- EDIT BUTTON ---
+ 
   const editBtn = e.target.closest('.edit-btn');
   if (editBtn) {
     editFoodId.value    = editBtn.dataset.id;
@@ -201,7 +195,7 @@ foodGrid.addEventListener('click', async (e) => {
     return;
   }
 
-  // --- DELETE BUTTON ---
+  
   const deleteBtn = e.target.closest('.delete-btn');
   if (deleteBtn) {
     const id = deleteBtn.dataset.id;
@@ -231,7 +225,7 @@ foodGrid.addEventListener('click', async (e) => {
 
 });
 
-// ===================== ORDER MODAL =====================
+
 modalCancel.addEventListener('click', closeModal);
 modalOverlay.addEventListener('click', e => { if (e.target === modalOverlay) closeModal(); });
 
